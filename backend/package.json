@@ -4,7 +4,7 @@
   "description": "Service Request Board Backend API",
   "main": "dist/server.js",
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "dev": "ts-node-dev --respawn --transpile-only server.ts",
     "build": "tsc",
     "start": "node dist/server.js"
   },
@@ -16,6 +16,7 @@
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "mongodb": "^7.2.0",
     "mongoose": "^9.6.2"
   },
   "devDependencies": {
