@@ -5,8 +5,19 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Job, JobStatus } from "@/types/job";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Trash2, Loader2, RefreshCw } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface JobDetailActionsProps {
   job: Job;
@@ -46,10 +57,6 @@ export function JobDetailActions({ job }: JobDetailActionsProps) {
   };
 
   const handleDelete = async () => {
-    if (!window.confirm("Are you sure you want to delete this service request? This action cannot be undone.")) {
-      return;
-    }
-
     setIsDeleting(true);
     try {
       const response = await fetch(`/api/jobs/${job._id}`, {
@@ -86,15 +93,37 @@ export function JobDetailActions({ job }: JobDetailActionsProps) {
           </SelectContent>
         </Select>
       </div>
-      
-      <Button variant="destructive" onClick={handleDelete} disabled={isDeleting} className="w-full sm:w-auto">
-        {isDeleting ? (
-          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-        ) : (
-          <Trash2 className="mr-2 h-4 w-4" />
-        )}
-        Delete Request
-      </Button>
+      <AlertDialog>
+        <AlertDialogTrigger 
+          disabled={isDeleting} 
+          className={buttonVariants({ variant: "destructive", className: "w-full sm:w-auto" })}
+        >
+          {isDeleting ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <Trash2 className="mr-2 h-4 w-4" />
+          )}
+          Delete Request
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete this service request
+              and remove its data from our servers.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleDelete} 
+              className={buttonVariants({ variant: "destructive" })}
+            >
+              Continue
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
