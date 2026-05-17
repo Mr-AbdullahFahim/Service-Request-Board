@@ -56,6 +56,16 @@ To populate the database with sample service request data, you can run the inclu
    npm run seed
    ```
 
+## Testing
+
+The backend includes a comprehensive suite of unit and integration tests for the API endpoints using **Jest** and **Supertest**. The tests run against an isolated, in-memory MongoDB instance to ensure they don't affect your actual data.
+
+1. Open a terminal and navigate to the `backend` directory.
+2. Run the test suite:
+   ```bash
+   npm run test
+   ```
+
 ## Run Instructions
 
 You will need two terminal windows to run both the frontend and backend simultaneously.
