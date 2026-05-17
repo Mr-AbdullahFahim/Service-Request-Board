@@ -46,6 +46,16 @@ The frontend does not require an `.env` file by default. The `BACKEND_URL` is co
 
 If you change the backend port, be sure to update the `BACKEND_URL` constant inside `next.config.ts`.
 
+## Data Seeding
+
+To populate the database with sample service request data, you can run the included seeding script. This will clear any existing job requests and add 5 sample records.
+
+1. Open a terminal and navigate to the `backend` directory.
+2. Run the seed command:
+   ```bash
+   npm run seed
+   ```
+
 ## Run Instructions
 
 You will need two terminal windows to run both the frontend and backend simultaneously.

@@ -1,6 +1,6 @@
 import type { NextConfig } from "next";
 
-const BACKEND_URL = 'http://localhost:5000/api';
+const BACKEND_URL = 'https://localhost:5000/api';
 
 const nextConfig: NextConfig = {
   env: {
