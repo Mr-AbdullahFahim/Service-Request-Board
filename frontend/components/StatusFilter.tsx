@@ -4,45 +4,42 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Suspense } from "react";
 
-function CategoryFilterContent() {
+function StatusFilterContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const currentCategory = searchParams.get("category") || "All";
+  const currentStatus = searchParams.get("status") || "All";
 
   const handleValueChange = (value: string | null) => {
     if (!value) return;
     const params = new URLSearchParams(searchParams.toString());
     if (value === "All") {
-      params.delete("category");
+      params.delete("status");
     } else {
-      params.set("category", value);
+      params.set("status", value);
     }
     const query = params.toString();
     router.push(query ? `/?${query}` : "/");
   };
 
   return (
-    <Select value={currentCategory} onValueChange={handleValueChange}>
+    <Select value={currentStatus} onValueChange={handleValueChange}>
       <SelectTrigger className="w-full sm:w-[180px]">
-        <SelectValue placeholder="Filter by Category" />
+        <SelectValue placeholder="Filter by Status" />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="All">All Categories</SelectItem>
-        <SelectItem value="Plumbing">Plumbing</SelectItem>
-        <SelectItem value="Electrical">Electrical</SelectItem>
-        <SelectItem value="Painting">Painting</SelectItem>
-        <SelectItem value="Joinery">Joinery</SelectItem>
-        <SelectItem value="HVAC">HVAC</SelectItem>
-        <SelectItem value="Other">Other</SelectItem>
+        <SelectItem value="All">All Statuses</SelectItem>
+        <SelectItem value="Open">Open</SelectItem>
+        <SelectItem value="In Progress">In Progress</SelectItem>
+        <SelectItem value="Closed">Closed</SelectItem>
       </SelectContent>
     </Select>
   );
 }
 
-export function CategoryFilter() {
+export function StatusFilter() {
   return (
     <Suspense fallback={<div className="h-10 w-[180px] bg-slate-100 dark:bg-slate-800 animate-pulse rounded-md" />}>
-      <CategoryFilterContent />
+      <StatusFilterContent />
     </Suspense>
   );
 }

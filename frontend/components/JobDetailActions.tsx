@@ -3,8 +3,15 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useAuth } from "@/lib/AuthContext";
 import { Job, JobStatus } from "@/types/job";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Trash2, Loader2, RefreshCw } from "lucide-react";
 import {
@@ -28,18 +35,23 @@ export function JobDetailActions({ job }: JobDetailActionsProps) {
   const [isUpdating, setIsUpdating] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [status, setStatus] = useState<JobStatus>(job.status);
+  const { user } = useAuth();
 
   const handleStatusChange = async (newStatus: JobStatus) => {
     setIsUpdating(true);
     setStatus(newStatus);
     try {
-      const response = await fetch(`/api/jobs/${job._id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `${process.env.BACKEND_URL || "http://localhost:5001"}/jobs/${job._id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user?.token}`,
+          },
+          body: JSON.stringify({ status: newStatus }),
         },
-        body: JSON.stringify({ status: newStatus }),
-      });
+      );
 
       if (!response.ok) {
         throw new Error("Failed to update status");
@@ -59,9 +71,15 @@ export function JobDetailActions({ job }: JobDetailActionsProps) {
   const handleDelete = async () => {
     setIsDeleting(true);
     try {
-      const response = await fetch(`/api/jobs/${job._id}`, {
-        method: "DELETE",
-      });
+      const response = await fetch(
+        `${process.env.BACKEND_URL || "http://localhost:5001"}/jobs/${job._id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${user?.token}`,
+          },
+        },
+      );
 
       if (!response.ok) {
         throw new Error("Failed to delete request");
@@ -77,13 +95,23 @@ export function JobDetailActions({ job }: JobDetailActionsProps) {
     }
   };
 
+  if (!user) return null;
+
   return (
     <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
       <div className="flex items-center gap-2">
         <span className="text-sm font-medium text-slate-500">Status:</span>
-        <Select value={status} onValueChange={(value) => value && handleStatusChange(value as JobStatus)} disabled={isUpdating}>
+        <Select
+          value={status}
+          onValueChange={(value) =>
+            value && handleStatusChange(value as JobStatus)
+          }
+          disabled={isUpdating}
+        >
           <SelectTrigger className="w-[160px]">
-            {isUpdating ? <RefreshCw className="mr-2 h-4 w-4 animate-spin" /> : null}
+            {isUpdating ? (
+              <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+            ) : null}
             <SelectValue placeholder="Update Status" />
           </SelectTrigger>
           <SelectContent>
@@ -94,9 +122,12 @@ export function JobDetailActions({ job }: JobDetailActionsProps) {
         </Select>
       </div>
       <AlertDialog>
-        <AlertDialogTrigger 
-          disabled={isDeleting} 
-          className={buttonVariants({ variant: "destructive", className: "w-full sm:w-auto" })}
+        <AlertDialogTrigger
+          disabled={isDeleting}
+          className={buttonVariants({
+            variant: "destructive",
+            className: "w-full sm:w-auto",
+          })}
         >
           {isDeleting ? (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -109,14 +140,14 @@ export function JobDetailActions({ job }: JobDetailActionsProps) {
           <AlertDialogHeader>
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete this service request
-              and remove its data from our servers.
+              This action cannot be undone. This will permanently delete this
+              service request and remove its data from our servers.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={handleDelete} 
+            <AlertDialogAction
+              onClick={handleDelete}
               className={buttonVariants({ variant: "destructive" })}
             >
               Continue

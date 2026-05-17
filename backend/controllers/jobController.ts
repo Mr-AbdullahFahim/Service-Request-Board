@@ -10,7 +10,7 @@ export const getJobs = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const { category, status } = req.query;
+    const { category, status, search } = req.query;
 
     const query: any = {};
 
@@ -20,6 +20,13 @@ export const getJobs = async (
 
     if (status) {
       query.status = status;
+    }
+
+    if (search && typeof search === 'string') {
+      query.$or = [
+        { title: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } },
+      ];
     }
 
     const jobs = await JobRequest.find(query);
